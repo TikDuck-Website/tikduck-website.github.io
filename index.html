@@ -32,7 +32,7 @@
             position: absolute;
             top: 0;
             width: 100%;
-            transition: transform 0.5s ease-in-out;
+            transition: transform 0.4s ease-in-out;
         }
         .video-item {
             width: 100vw;
@@ -53,8 +53,8 @@
         .like-btn {
             position: absolute;
             top: 50%;
-            right: 38%;
-            transform: translate(50%, -50%);
+            right: 20%;
+            transform: translateY(-50%);
             border: none;
             background: none;
             font-size: 40px;
@@ -63,7 +63,7 @@
             transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
         }
         .like-btn:hover {
-            transform: translate(50%, -50%) scale(1.3);
+            transform: scale(1.3);
         }
         .logo {
             position: absolute;
@@ -92,11 +92,7 @@
     </div>
     <script>
         const videoWrapper = document.getElementById('videoWrapper');
-        const videoUrls = [
-            'canard1.mp4',
-            'canard2.mp4',
-            'canard3.mp4'
-        ];
+        const videoUrls = ['canard1.mp4', 'canard2.mp4', 'canard3.mp4'];
         let currentIndex = 0;
 
         function createVideoElement(url) {
@@ -110,19 +106,13 @@
             video.controls = false;
             video.muted = true;
             video.setAttribute('playsinline', '');
-            
-            video.onloadeddata = () => {
-                video.play();
-            };
-            
+            video.onloadeddata = () => video.play();
             videoContainer.appendChild(video);
 
             const likeBtn = document.createElement('button');
             likeBtn.classList.add('like-btn');
             likeBtn.innerHTML = '🤍';
-            likeBtn.addEventListener('click', () => {
-                likeBtn.innerHTML = likeBtn.innerHTML === '🤍' ? '❤️' : '🤍';
-            });
+            likeBtn.onclick = () => likeBtn.innerHTML = likeBtn.innerHTML === '🤍' ? '❤️' : '🤍';
             videoContainer.appendChild(likeBtn);
             
             return videoContainer;
@@ -130,19 +120,15 @@
 
         function loadVideos() {
             videoWrapper.innerHTML = '';
-            for (let i = 0; i < 10; i++) { // Charger plusieurs vidéos pour un effet infini
+            for (let i = 0; i < 5; i++) {
                 const randomVideo = videoUrls[Math.floor(Math.random() * videoUrls.length)];
                 videoWrapper.appendChild(createVideoElement(randomVideo));
             }
         }
 
         document.addEventListener('wheel', (event) => {
-            if (event.deltaY > 0) {
+            if (event.deltaY > 0 && currentIndex < videoWrapper.children.length - 1) {
                 currentIndex++;
-                if (currentIndex >= videoWrapper.children.length) {
-                    const randomVideo = videoUrls[Math.floor(Math.random() * videoUrls.length)];
-                    videoWrapper.appendChild(createVideoElement(randomVideo));
-                }
             } else if (event.deltaY < 0 && currentIndex > 0) {
                 currentIndex--;
             }
