@@ -21,7 +21,7 @@
             overflow: hidden;
         }
         .video-container {
-            width: 100vw;
+            width: 80vw;
             height: 100vh;
             position: relative;
             overflow: hidden;
@@ -35,7 +35,7 @@
             transition: transform 0.4s ease-in-out;
         }
         .video-item {
-            width: 100vw;
+            width: 100%;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -53,7 +53,7 @@
         .like-btn, .comment-btn {
             position: absolute;
             top: 50%;
-            right: 38%;
+            right: 10%;
             transform: translate(50%, -50%);
             border: none;
             background: none;
@@ -68,6 +68,30 @@
         .comment-btn {
             top: 65%;
             font-size: 30px;
+        }
+        .comment-section {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 20vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            overflow-y: auto;
+            color: white;
+            border-left: 1px solid #fff;
+        }
+        .comment-input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .comment-list {
+            max-height: 85vh;
+            overflow-y: auto;
         }
         .logo {
             position: absolute;
@@ -93,15 +117,24 @@
         <div class="video-container">
             <div class="video-wrapper" id="videoWrapper"></div>
         </div>
+        <div class="comment-section" id="commentSection">
+            <input type="text" id="commentInput" class="comment-input" placeholder="Ajouter un commentaire...">
+            <div class="comment-list" id="commentList"></div>
+        </div>
     </div>
     <script>
         const videoWrapper = document.getElementById('videoWrapper');
         const videoUrls = ['canard1.mp4', 'canard2.mp4', 'canard3.mp4'];
         let currentIndex = 0;
+        const commentSection = document.getElementById('commentSection');
+        const commentInput = document.getElementById('commentInput');
+        const commentList = document.getElementById('commentList');
+        let videoComments = {};
 
-        function createVideoElement(url) {
+        function createVideoElement(url, index) {
             const videoContainer = document.createElement('div');
             videoContainer.classList.add('video-item');
+            videoContainer.dataset.index = index;
 
             const video = document.createElement('video');
             video.src = url;
@@ -122,10 +155,7 @@
             const commentBtn = document.createElement('button');
             commentBtn.classList.add('comment-btn');
             commentBtn.innerHTML = '💬';
-            commentBtn.onclick = () => {
-                const comment = prompt("Écrire un commentaire :");
-                if (comment) alert(`Commentaire ajouté : ${comment}`);
-            };
+            commentBtn.onclick = () => showComments(index);
             videoContainer.appendChild(commentBtn);
             
             return videoContainer;
@@ -135,9 +165,32 @@
             videoWrapper.innerHTML = '';
             for (let i = 0; i < 5; i++) {
                 const randomVideo = videoUrls[Math.floor(Math.random() * videoUrls.length)];
-                videoWrapper.appendChild(createVideoElement(randomVideo));
+                videoWrapper.appendChild(createVideoElement(randomVideo, i));
+                videoComments[i] = [];
             }
         }
+
+        function showComments(index) {
+            commentList.innerHTML = '';
+            videoComments[index].forEach(comment => {
+                const commentItem = document.createElement('div');
+                commentItem.textContent = comment;
+                commentList.appendChild(commentItem);
+            });
+            commentInput.dataset.index = index;
+        }
+
+        commentInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const commentText = event.target.value.trim();
+                const videoIndex = commentInput.dataset.index;
+                if (commentText && videoIndex !== undefined) {
+                    videoComments[videoIndex].push(commentText);
+                    showComments(videoIndex);
+                    event.target.value = '';
+                }
+            }
+        });
 
         document.addEventListener('wheel', (event) => {
             if (event.deltaY > 0 && currentIndex < videoWrapper.children.length - 1) {
@@ -152,3 +205,4 @@
     </script>
 </body>
 </html>
+
