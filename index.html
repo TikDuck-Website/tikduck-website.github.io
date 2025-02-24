@@ -69,6 +69,31 @@
             top: 65%;
             font-size: 30px;
         }
+        .comment-section {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            transition: bottom 0.3s ease-in-out;
+            max-height: 40vh;
+            overflow-y: auto;
+            color: white;
+        }
+        .comment-section.show {
+            bottom: 0;
+        }
+        .comment-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+        }
+        .comment-list {
+            margin-top: 10px;
+        }
         .logo {
             position: absolute;
             top: 10px;
@@ -93,6 +118,10 @@
         <div class="video-container">
             <div class="video-wrapper" id="videoWrapper"></div>
         </div>
+    </div>
+    <div class="comment-section" id="commentSection">
+        <input type="text" id="commentInput" class="comment-input" placeholder="Ajouter un commentaire...">
+        <div class="comment-list" id="commentList"></div>
     </div>
     <script>
         const videoWrapper = document.getElementById('videoWrapper');
@@ -123,8 +152,7 @@
             commentBtn.classList.add('comment-btn');
             commentBtn.innerHTML = '💬';
             commentBtn.onclick = () => {
-                const comment = prompt("Écrire un commentaire :");
-                if (comment) alert(`Commentaire ajouté : ${comment}`);
+                document.getElementById('commentSection').classList.toggle('show');
             };
             videoContainer.appendChild(commentBtn);
             
@@ -138,6 +166,19 @@
                 videoWrapper.appendChild(createVideoElement(randomVideo));
             }
         }
+
+        document.getElementById('commentInput').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const commentText = event.target.value.trim();
+                if (commentText) {
+                    const commentList = document.getElementById('commentList');
+                    const commentItem = document.createElement('div');
+                    commentItem.textContent = commentText;
+                    commentList.appendChild(commentItem);
+                    event.target.value = '';
+                }
+            }
+        });
 
         document.addEventListener('wheel', (event) => {
             if (event.deltaY > 0 && currentIndex < videoWrapper.children.length - 1) {
