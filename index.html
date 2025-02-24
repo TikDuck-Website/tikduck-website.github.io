@@ -71,7 +71,7 @@
         }
         .comment-section {
             position: absolute;
-            right: 0;
+            right: -25vw;
             top: 0;
             width: 20vw;
             height: 100vh;
@@ -80,6 +80,7 @@
             overflow-y: auto;
             color: white;
             border-left: 1px solid #fff;
+            transition: right 0.3s ease-in-out;
         }
         .comment-input-container {
             display: flex;
@@ -173,49 +174,27 @@
             const commentBtn = document.createElement('button');
             commentBtn.classList.add('comment-btn');
             commentBtn.innerHTML = '💬';
-            commentBtn.onclick = () => showComments(index);
+            commentBtn.onclick = () => toggleComments(index);
             videoContainer.appendChild(commentBtn);
             
             return videoContainer;
         }
 
-        function loadVideos() {
-            videoWrapper.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-                const randomVideo = videoUrls[Math.floor(Math.random() * videoUrls.length)];
-                videoWrapper.appendChild(createVideoElement(randomVideo, i));
-                videoComments[i] = [];
+        function toggleComments(index) {
+            if (commentSection.style.right === '0px' && commentInput.dataset.index == index) {
+                commentSection.style.right = '-25vw';
+            } else {
+                commentList.innerHTML = '';
+                videoComments[index] = videoComments[index] || [];
+                videoComments[index].forEach(comment => {
+                    const commentItem = document.createElement('div');
+                    commentItem.textContent = comment;
+                    commentList.appendChild(commentItem);
+                });
+                commentInput.dataset.index = index;
+                commentSection.style.right = '0px';
             }
         }
-
-        function showComments(index) {
-            commentList.innerHTML = '';
-            videoComments[index].forEach(comment => {
-                const commentItem = document.createElement('div');
-                commentItem.textContent = comment;
-                commentList.appendChild(commentItem);
-            });
-            commentInput.dataset.index = index;
-        }
-
-        function addComment() {
-            const commentText = commentInput.value.trim();
-            const videoIndex = commentInput.dataset.index;
-            if (commentText && videoIndex !== undefined) {
-                videoComments[videoIndex].push(commentText);
-                showComments(videoIndex);
-                commentInput.value = '';
-            }
-        }
-
-        commentSubmit.addEventListener('click', addComment);
-        commentInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                addComment();
-            }
-        });
-
-        loadVideos();
     </script>
 </body>
 </html>
