@@ -21,7 +21,7 @@
             overflow: hidden;
         }
         .video-container {
-            width: 80vw;
+            width: 100vw;
             height: 100vh;
             position: relative;
             overflow: hidden;
@@ -35,7 +35,7 @@
             transition: transform 0.4s ease-in-out;
         }
         .video-item {
-            width: 100%;
+            width: 100vw;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -53,7 +53,7 @@
         .like-btn, .comment-btn {
             position: absolute;
             top: 50%;
-            right: 10%;
+            right: 38%;
             transform: translate(50%, -50%);
             border: none;
             background: none;
@@ -68,45 +68,6 @@
         .comment-btn {
             top: 65%;
             font-size: 30px;
-        }
-        .comment-section {
-            position: absolute;
-            right: -25vw;
-            top: 0;
-            width: 20vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 15px;
-            overflow-y: auto;
-            color: white;
-            border-left: 1px solid #fff;
-            transition: right 0.3s ease-in-out;
-        }
-        .comment-input-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .comment-input {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .comment-submit {
-            padding: 10px;
-            font-size: 16px;
-            background: #fff;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .comment-list {
-            max-height: 85vh;
-            overflow-y: auto;
         }
         .logo {
             position: absolute;
@@ -132,28 +93,15 @@
         <div class="video-container">
             <div class="video-wrapper" id="videoWrapper"></div>
         </div>
-        <div class="comment-section" id="commentSection">
-            <div class="comment-input-container">
-                <input type="text" id="commentInput" class="comment-input" placeholder="Ajouter un commentaire...">
-                <button id="commentSubmit" class="comment-submit">➤</button>
-            </div>
-            <div class="comment-list" id="commentList"></div>
-        </div>
     </div>
     <script>
         const videoWrapper = document.getElementById('videoWrapper');
         const videoUrls = ['canard1.mp4', 'canard2.mp4', 'canard3.mp4'];
         let currentIndex = 0;
-        const commentSection = document.getElementById('commentSection');
-        const commentInput = document.getElementById('commentInput');
-        const commentList = document.getElementById('commentList');
-        const commentSubmit = document.getElementById('commentSubmit');
-        let videoComments = {};
 
-        function createVideoElement(url, index) {
+        function createVideoElement(url) {
             const videoContainer = document.createElement('div');
             videoContainer.classList.add('video-item');
-            videoContainer.dataset.index = index;
 
             const video = document.createElement('video');
             video.src = url;
@@ -174,27 +122,33 @@
             const commentBtn = document.createElement('button');
             commentBtn.classList.add('comment-btn');
             commentBtn.innerHTML = '💬';
-            commentBtn.onclick = () => toggleComments(index);
+            commentBtn.onclick = () => {
+                const comment = prompt("Écrire un commentaire :");
+                if (comment) alert(`Commentaire ajouté : ${comment}`);
+            };
             videoContainer.appendChild(commentBtn);
             
             return videoContainer;
         }
 
-        function toggleComments(index) {
-            if (commentSection.style.right === '0px' && commentInput.dataset.index == index) {
-                commentSection.style.right = '-25vw';
-            } else {
-                commentList.innerHTML = '';
-                videoComments[index] = videoComments[index] || [];
-                videoComments[index].forEach(comment => {
-                    const commentItem = document.createElement('div');
-                    commentItem.textContent = comment;
-                    commentList.appendChild(commentItem);
-                });
-                commentInput.dataset.index = index;
-                commentSection.style.right = '0px';
+        function loadVideos() {
+            videoWrapper.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const randomVideo = videoUrls[Math.floor(Math.random() * videoUrls.length)];
+                videoWrapper.appendChild(createVideoElement(randomVideo));
             }
         }
+
+        document.addEventListener('wheel', (event) => {
+            if (event.deltaY > 0 && currentIndex < videoWrapper.children.length - 1) {
+                currentIndex++;
+            } else if (event.deltaY < 0 && currentIndex > 0) {
+                currentIndex--;
+            }
+            videoWrapper.style.transform = `translateY(-${currentIndex * 100}vh)`;
+        });
+
+        loadVideos();
     </script>
 </body>
 </html>
